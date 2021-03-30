@@ -30,7 +30,7 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    private boolean active = true;
+    private Boolean active = true;
 
     @ManyToMany
     private Set<Warehouse> warehouses;

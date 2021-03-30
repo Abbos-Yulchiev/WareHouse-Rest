@@ -17,5 +17,5 @@ import javax.persistence.ManyToOne;
 public class Category extends AbsEntity {
 
     @ManyToOne
-    private Category parentCategoryId;
+    private Category parentCategory;
 }

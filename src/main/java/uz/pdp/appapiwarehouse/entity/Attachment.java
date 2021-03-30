@@ -20,7 +20,9 @@ public class Attachment {
 
     private String name;
 
-    private long size;
+    private Long size;
 
     private String contentType;
+
+    private Byte[] bytes;
 }
