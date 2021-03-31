@@ -24,5 +24,5 @@ public class Attachment {
 
     private String contentType;
 
-    private Byte[] bytes;
+    private byte[] bytes;
 }
