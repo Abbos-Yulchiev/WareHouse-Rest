@@ -8,8 +8,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import uz.pdp.appapiwarehouse.entity.Attachment;
+import uz.pdp.appapiwarehouse.entity.AttachmentContent;
 import uz.pdp.appapiwarehouse.payload.Result;
+import uz.pdp.appapiwarehouse.repository.AttachmentContentRepository;
 import uz.pdp.appapiwarehouse.repository.AttachmentRepository;
+
 
 import java.util.Iterator;
 import java.util.Optional;
@@ -18,10 +21,11 @@ import java.util.Optional;
 public class AttachmentService {
 
     final AttachmentRepository attachmentRepository;
+    final AttachmentContentRepository attachmentContentRepository;
 
-
-    public AttachmentService(AttachmentRepository attachmentRepository) {
+    public AttachmentService(AttachmentRepository attachmentRepository, AttachmentContentRepository attachmentContentRepository) {
         this.attachmentRepository = attachmentRepository;
+        this.attachmentContentRepository = attachmentContentRepository;
     }
 
     @SneakyThrows
@@ -35,9 +39,14 @@ public class AttachmentService {
         attachment.setName(file.getOriginalFilename());
         attachment.setSize(file.getSize());
         attachment.setContentType(file.getContentType());
-        attachment.setBytes(file.getBytes());
 
         Attachment savedAttachment = attachmentRepository.save(attachment);
+        AttachmentContent attachmentContent = new AttachmentContent();
+
+        attachmentContent.setBytes(file.getBytes());
+        attachmentContent.setAttachment(savedAttachment);
+        attachmentContentRepository.save(attachmentContent);
+
         return new Result("File saved", true, savedAttachment.getId());
     }
 
@@ -70,9 +79,14 @@ public class AttachmentService {
         editedAttachment.setContentType(file.getContentType());
         editedAttachment.setName(file.getOriginalFilename());
         editedAttachment.setSize(file.getSize());
-        editedAttachment.setBytes(file.getBytes());
 
         Attachment savedAttachment = attachmentRepository.save(editedAttachment);
+
+        AttachmentContent attachmentContent = new AttachmentContent();
+        attachmentContent.setBytes(file.getBytes());
+        attachmentContent.setAttachment(savedAttachment);
+        attachmentContentRepository.save(attachmentContent);
+
         return new Result("Attachment edited", true, savedAttachment.getId());
     }
 
@@ -81,8 +95,8 @@ public class AttachmentService {
         Optional<Attachment> optionalAttachment = attachmentRepository.findById(attachmentId);
         if (!optionalAttachment.isPresent())
             return new Result("Invalid Attachment Id", false);
+
         attachmentRepository.deleteById(attachmentId);
         return new Result("Attachment deleted", true);
-
     }
 }

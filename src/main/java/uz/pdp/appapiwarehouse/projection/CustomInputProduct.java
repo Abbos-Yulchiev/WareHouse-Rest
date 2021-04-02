@@ -8,7 +8,6 @@ import java.util.Date;
 @Projection(types = InputProduct.class)
 public interface CustomInputProduct {
 
-
     Integer getId();
 
     Double getAmount();
