@@ -62,33 +62,6 @@ public class AttachmentService {
         return optionalAttachment.orElseGet(Attachment::new);
     }
 
-    @SneakyThrows
-    public Result editAttachment(Integer attachmentId, MultipartHttpServletRequest request) {
-
-        Optional<Attachment> optionalAttachment = attachmentRepository.findById(attachmentId);
-
-        if (!optionalAttachment.isPresent())
-            return new Result("Invalid attachment ID", false);
-
-        Iterator<String> fileNames = request.getFileNames();
-        MultipartFile file = request.getFile(fileNames.next());
-
-        Attachment editedAttachment = optionalAttachment.get();
-
-        assert file != null;
-        editedAttachment.setContentType(file.getContentType());
-        editedAttachment.setName(file.getOriginalFilename());
-        editedAttachment.setSize(file.getSize());
-
-        Attachment savedAttachment = attachmentRepository.save(editedAttachment);
-
-        AttachmentContent attachmentContent = new AttachmentContent();
-        attachmentContent.setBytes(file.getBytes());
-        attachmentContent.setAttachment(savedAttachment);
-        attachmentContentRepository.save(attachmentContent);
-
-        return new Result("Attachment edited", true, savedAttachment.getId());
-    }
 
     public Result deleteAttachment(Integer attachmentId) {
 
