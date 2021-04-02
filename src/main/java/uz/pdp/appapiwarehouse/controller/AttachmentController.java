@@ -1,15 +1,12 @@
 package uz.pdp.appapiwarehouse.controller;
 
 
-import org.springframework.data.domain.Page;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
-import uz.pdp.appapiwarehouse.entity.Attachment;
-import uz.pdp.appapiwarehouse.payload.Result;
 import uz.pdp.appapiwarehouse.service.AttachmentService;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 
 @RestController
@@ -22,31 +19,13 @@ public class AttachmentController {
         this.attachmentService = attachmentService;
     }
 
-    @PostMapping("/upload")
-    public ResponseEntity<?> upload(MultipartHttpServletRequest request) {
-
-        Result result = attachmentService.uploadFile(request);
-        return ResponseEntity.status(result.getStatus() ? HttpStatus.ACCEPTED : HttpStatus.CONFLICT).body(result);
+    @PostMapping
+    public String uploadFile(MultipartHttpServletRequest request) throws IOException {
+        return attachmentService.uploadFile(request);
     }
 
-    @GetMapping("/get")
-    public ResponseEntity<?> getAttachmentList(@RequestParam Integer page) {
-
-        Page<Attachment> attachmentList = attachmentService.getAttachmentList(page);
-        return ResponseEntity.ok(attachmentList);
-    }
-
-    @GetMapping(value = "/get/{attachmentId}")
-    public ResponseEntity<?> getOneAttachment(@PathVariable Integer attachmentId) {
-
-        Attachment oneAttachment = attachmentService.getOneAttachment(attachmentId);
-        return ResponseEntity.ok(oneAttachment);
-    }
-
-    @DeleteMapping(value = "/delete/{attachmentId}")
-    public ResponseEntity<?> deleteAttachment(@PathVariable Integer attachmentId) {
-
-        Result result = attachmentService.deleteAttachment(attachmentId);
-        return ResponseEntity.status(result.getStatus() ? HttpStatus.ACCEPTED : HttpStatus.CONFLICT).body(result);
+    @GetMapping("/{id}")
+    public void getFile(@PathVariable Integer id, HttpServletResponse response) throws IOException {
+        attachmentService.getFile(id, response);
     }
 }
